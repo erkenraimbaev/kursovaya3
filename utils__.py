@@ -4,16 +4,22 @@ from zipfile import ZipFile
 
 
 def opener_zip(filename):
+    """
+    Эта функция выгружает данные из zip
+    :param filename: 'operations.zip'
+    :return: список с банковскими операциями
+    """
     with ZipFile("operations.zip", mode="r") as operation_json:
         with operation_json.open("operations.json", mode="r") as operation_txt:
             operations_list = (json.loads(operation_txt.read()))
     return operations_list
 
 
-opener_zip('operations.zip')
-
-
-def filter_of_executed(operations):
+def filter_of_executed():
+    """
+    Эта функция сортирует данные по ключу EXECUTED
+    :return: список с выполненными банковскими операциями
+    """
     executed_list = []
     operations = opener_zip('operations.zip')
     for i in operations:
@@ -22,19 +28,21 @@ def filter_of_executed(operations):
     return executed_list
 
 
-filter_of_executed(operations=opener_zip('operations.zip'))
-
-
 def sort_executed():
-    executed_list = filter_of_executed(operations=opener_zip('operations.zip'))
+    """
+    Эта функция сортирует данные по дате, ставя последние операции в начало списка
+    :return: отфильтрованный список
+    """
+    executed_list = filter_of_executed()
     sort_list = sorted(executed_list, key=operator.itemgetter('date'), reverse=True)
     return sort_list
 
 
-sort_executed()
-
-
 def output_5_end_operations():
+    """
+    Эта функция выводит 5 последних операций совершенных клиентом
+    :return: список из 5 последних операций
+    """
     ends_operations = sort_executed()
     ends_operations_list = []
     count = 5
@@ -42,24 +50,25 @@ def output_5_end_operations():
         if count != 0:
             count -= 1
             ends_operations_list.append(i)
-    # return print(ends_operations_list)
     return ends_operations_list
 
 
-output_5_end_operations()
-
-
 def get_date():
+    """
+    Эта функция переделывает отображение даты совершения операции в нужном виде
+    :return: список с новым значением ключа date
+    """
     necessary_options = output_5_end_operations()
     for i in necessary_options:
         i['date'] = ".".join(i['date'].split('T')[0].split('-')[::-1])
     return necessary_options
 
 
-get_date()
-
-
 def get_requisites_view():
+    """
+    Эта функция меняет отображение счета и карты в нужном виде
+    :return: список с новым значением ключа from
+    """
     operations_list = get_date()
     for i in operations_list:
         if i.get('from') is None:
@@ -79,10 +88,11 @@ def get_requisites_view():
     return operations_list
 
 
-get_requisites_view()
-
-
 def get_requisites_view_to():
+    """
+    Эта функция меняет отображение номера счета и карты в нужном виде
+    :return: список с новыми значениями ключа to
+    """
     operations_list = get_requisites_view()
     for i in operations_list:
         if i.get('to') is None:
@@ -102,10 +112,11 @@ def get_requisites_view_to():
     return operations_list
 
 
-get_requisites_view_to()
-
-
 def show_to_user():
+    """
+    Эта функция выводит пользователю информацию в нужном виде согласно заданию
+    :return: значения нужных параметров в последовательности по заданию
+    """
     operations_list_end = get_requisites_view_to()
     for i in operations_list_end:
         date_finish = i['date']
@@ -119,5 +130,3 @@ def show_to_user():
         print(f'{sum_finish} {code_finish}')
         print("")
 
-
-show_to_user()
